@@ -14,17 +14,20 @@ int main(int argc, char *argv[])
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
 		goto cleanup_gif;
 	}
-	SDL_Window* window;
-	SDL_Renderer* renderer;
-	if (SDL_CreateWindowAndRenderer(gif->width, gif->height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE, &window, &renderer)) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window and renderer: %s", SDL_GetError());
-		goto cleanup_sdl;
-	}
-    SDL_SetWindowTitle(window, "gifwallpaper");
+	SDL_Window* window = SDL_CreateWindow("gifwallpaper", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, gif->width, gif->height, 0);
+    if (!window) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window: %s", SDL_GetError());
+        goto cleanup_sdl;
+    }
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create renderer: %s", SDL_GetError());
+        goto cleanup_window;
+    }
 	Uint8 *frame = malloc(gif->width * gif->height * 3);
 	if (!frame) {
 		fprintf(stderr, "Couldn't allocate frame\n");
-		goto cleanup_window_renderer;
+		goto cleanup_renderer;
 	}
 	struct TextureNode {
 		SDL_Texture* texture;
@@ -61,8 +64,9 @@ cleanup_texture_node_root:
 	}
 cleanup_frame:
 	free(frame);
-cleanup_window_renderer:
+cleanup_renderer:
 	SDL_DestroyRenderer(renderer);
+cleanup_window:
 	SDL_DestroyWindow(window);
 cleanup_sdl:
 	SDL_Quit();
