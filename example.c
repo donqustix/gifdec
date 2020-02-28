@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 		}
 		SDL_RenderCopy(renderer, texture_node_root->texture, NULL, NULL);
 		SDL_RenderPresent(renderer);
-		SDL_Delay(gif->gce.delay * 10 * 3 / 2);
+		SDL_Delay(1 + gif->gce.delay * 10 * 3 / 2);
 		texture_node_root = texture_node_root->next;
 	}
 	ret_code = 0;
