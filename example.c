@@ -16,10 +16,11 @@ int main(int argc, char *argv[])
 	}
 	SDL_Window* window;
 	SDL_Renderer* renderer;
-	if (SDL_CreateWindowAndRenderer(gif->width, gif->height, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+	if (SDL_CreateWindowAndRenderer(gif->width, gif->height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE, &window, &renderer)) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window and renderer: %s", SDL_GetError());
 		goto cleanup_sdl;
 	}
+    SDL_SetWindowTitle(window, "gifwallpaper");
 	Uint8 *frame = malloc(gif->width * gif->height * 3);
 	if (!frame) {
 		fprintf(stderr, "Couldn't allocate frame\n");
